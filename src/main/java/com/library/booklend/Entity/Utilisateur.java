@@ -1,12 +1,14 @@
 package com.library.booklend.Entity;
 
 import jakarta.persistence.*;
+
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -44,6 +46,12 @@ public class Utilisateur implements UserDetails {
 
     @Column(name = "account_status", columnDefinition = "VARCHAR(20) DEFAULT 'En Attente'")
     private String accountStatus;
+
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expiry")
+    private Date resetTokenExpiry;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

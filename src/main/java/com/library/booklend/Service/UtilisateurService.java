@@ -40,4 +40,5 @@ public class UtilisateurService {
                 new IllegalArgumentException("Utilisateur not found for ID: " + id));
         utilisateurRepository.delete(utilisateur);
     }
+
 }

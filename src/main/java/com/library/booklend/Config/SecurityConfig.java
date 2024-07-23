@@ -29,6 +29,7 @@ public class SecurityConfig {
     private JWTAuthFIlter jwtAuthFIlter;
 
     @Bean
+
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
@@ -44,7 +45,7 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
-  /*   @Bean
+ /*    @Bean
      public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests().anyRequest().permitAll();
         return http.build();

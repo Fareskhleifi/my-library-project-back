@@ -3,7 +3,6 @@ package com.library.booklend.Service;
 import com.library.booklend.Entity.Utilisateur;
 import com.library.booklend.dto.ReqRes;
 import com.library.booklend.Repository.UtilisateurRepository;
-import com.library.booklend.Service.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,7 +10,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -20,6 +22,12 @@ public class AuthService {
     private final JWTUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    @Autowired
+    private UtilisateurRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
+
 
     @Autowired
     public AuthService(UtilisateurRepository utilisateurRepository, JWTUtils jwtUtils, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
@@ -98,4 +106,30 @@ public class AuthService {
         }
         return response;
     }
+    public void generateResetToken(String email) {
+        Optional<Utilisateur> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            Utilisateur user = optionalUser.get();
+            String token = UUID.randomUUID().toString();
+            user.setResetToken(token);
+            user.setResetTokenExpiry(new Date(System.currentTimeMillis() + 3600000)); // Token valid for 1 hour
+            userRepository.save(user);
+
+            String resetLink = "http://localhost:8080/auth/reset-password?token=" + token;
+            emailService.sendEmail(email, "Password Reset", "Click the link to reset your password: " + resetLink);
+        }
+    }
+
+    public boolean resetPassword(String token, String newPassword) {
+        Utilisateur user = userRepository.findByResetToken(token);
+        if (user != null && user.getResetTokenExpiry().after(new Date())) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setResetToken(null);
+            user.setResetTokenExpiry(null);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
 }
