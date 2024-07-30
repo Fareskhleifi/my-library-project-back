@@ -27,8 +27,9 @@ public class Livre {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "categorie", length = 50)
-    private String categorie;
+    @ManyToOne
+    @JoinColumn(name = "categorie_id")
+    private Categorie categorie;
 
     @Column(name = "disponibilite", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean disponibilite;
@@ -39,5 +40,4 @@ public class Livre {
     public boolean getDisponibilite() {
         return this.disponibilite;
     }
-
 }

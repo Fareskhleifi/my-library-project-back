@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.library.booklend.Entity.Utilisateur;
 import lombok.Data;
 
-import javax.persistence.Column;
-import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)

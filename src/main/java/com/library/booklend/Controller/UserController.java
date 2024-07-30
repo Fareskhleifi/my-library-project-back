@@ -48,10 +48,7 @@ public class UserController {
         return livreService.searchLivresByAuteur(auteur);
     }
 
-    @GetMapping("/user/search/categorie")
-    public List<Livre> searchLivresByCategorie(@RequestParam String categorie) {
-        return livreService.searchLivresByCategorie(categorie);
-    }
+
     @GetMapping("/user/livresDisponibles")
     public List<Livre> getLivresDisponibles() {
         return livreService.getLivresDisponibles();

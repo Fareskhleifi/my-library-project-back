@@ -6,13 +6,10 @@ import com.library.booklend.Repository.LivreRepository;
 import com.library.booklend.Repository.TransactionRepository;
 import com.library.booklend.Repository.UtilisateurRepository;
 import com.library.booklend.dto.TransactionDTO;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +22,8 @@ public class TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+
+
     public String emprunterLivre(Long livreId, Long utilisateurId, int nombreJours) {
         Optional<Livre> livreOptional = livreRepository.findById(livreId);
         Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findById(utilisateurId);
@@ -90,6 +89,34 @@ public class TransactionService {
         dto.setPrixTotal(transaction.getPrixTotal());
         dto.setRetourne(transaction.isRetourne());
         dto.setLivre_id(transaction.getLivre().getId());
+        dto.setUser_id(transaction.getUtilisateur().getId());
+        dto.setUsername(transaction.getUtilisateur().username());
         return dto;
+    }
+
+    public List<TransactionDTO> getAllTransactions() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        return transactions.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    public List<Map<String, Object>> getTotalProfitPerDay() {
+        List<Object[]> results = transactionRepository.findTotalProfitPerDay();
+        List<Map<String, Object>> profits = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("date", result[0]);
+            map.put("totalProfit", result[1]);
+            profits.add(map);
+        }
+
+        return profits;
+    }
+
+    public void deleteTransaction(Long id) {
+        transactionRepository.deleteById(id);
+    }
+    public List<Map<String, Object>> getCategoryTransactionData() {
+        return transactionRepository.findCategoryTransactionData();
     }
 }

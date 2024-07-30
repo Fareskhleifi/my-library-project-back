@@ -12,8 +12,8 @@ public class Notification {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "destinataire_id", nullable = false)
-    private Utilisateur destinataire;
+    @JoinColumn(name = "destinateur_id", nullable = false)
+    private Utilisateur destinateur;
 
     @Column(name = "message", columnDefinition = "TEXT")
     private String message;

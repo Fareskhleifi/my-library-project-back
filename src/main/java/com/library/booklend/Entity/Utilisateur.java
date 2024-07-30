@@ -63,6 +63,10 @@ public class Utilisateur implements UserDetails {
         return email;
     }
 
+    public String username() {
+        return username;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

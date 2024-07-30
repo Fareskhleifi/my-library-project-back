@@ -25,8 +25,7 @@ public class AuthService {
     @Autowired
     private UtilisateurRepository userRepository;
 
-    @Autowired
-    private EmailService emailService;
+
 
 
     @Autowired
@@ -48,7 +47,7 @@ public class AuthService {
             utilisateur.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
             utilisateur.setTelephone(registrationRequest.getTelephone());
             utilisateur.setAdresse(registrationRequest.getAdresse());
-            utilisateur.setRole(registrationRequest.getRole());
+            utilisateur.setRole("USER");
             utilisateur.setAccountStatus("Active");
             Utilisateur savedUser = utilisateurRepository.save(utilisateur);
             if (savedUser != null && savedUser.getId() > 0) {
@@ -77,9 +76,11 @@ public class AuthService {
             var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
             response.setStatusCode(200);
             response.setToken(jwt);
+            response.setRole(user.getRole());
             response.setRefreshToken(refreshToken);
             response.setExpirationTime("24Hr");
             response.setMessage("Successfully Signed In");
+            response.setNom(user.getNom()+" "+user.getPrenom());
         } catch (Exception e) {
             response.setStatusCode(500);
             response.setError(e.getMessage());
@@ -106,30 +107,6 @@ public class AuthService {
         }
         return response;
     }
-    public void generateResetToken(String email) {
-        Optional<Utilisateur> optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.isPresent()) {
-            Utilisateur user = optionalUser.get();
-            String token = UUID.randomUUID().toString();
-            user.setResetToken(token);
-            user.setResetTokenExpiry(new Date(System.currentTimeMillis() + 3600000)); // Token valid for 1 hour
-            userRepository.save(user);
 
-            String resetLink = "http://localhost:8080/auth/reset-password?token=" + token;
-            emailService.sendEmail(email, "Password Reset", "Click the link to reset your password: " + resetLink);
-        }
-    }
-
-    public boolean resetPassword(String token, String newPassword) {
-        Utilisateur user = userRepository.findByResetToken(token);
-        if (user != null && user.getResetTokenExpiry().after(new Date())) {
-            user.setPassword(passwordEncoder.encode(newPassword));
-            user.setResetToken(null);
-            user.setResetTokenExpiry(null);
-            userRepository.save(user);
-            return true;
-        }
-        return false;
-    }
 
 }

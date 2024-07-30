@@ -27,21 +27,6 @@ public class AuthController {
         return ResponseEntity.ok(authService.refreshToken(refreshTokenRequest));
     }
 
-    @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody String email) {
-        authService.generateResetToken(email);
-        return ResponseEntity.ok("Password reset email sent");
-    }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam("token") String token,
-                                                @RequestParam("newPassword") String newPassword) {
-        boolean result = authService.resetPassword(token, newPassword);
-        if (result) {
-            return ResponseEntity.ok("Password has been reset");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token or token expired");
-        }
-    }
 
 }
