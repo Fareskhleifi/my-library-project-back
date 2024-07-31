@@ -119,4 +119,8 @@ public class TransactionService {
     public List<Map<String, Object>> getCategoryTransactionData() {
         return transactionRepository.findCategoryTransactionData();
     }
+
+    public Optional<Date> getOngoingTransactionReturnDate(Long livreId) {
+        return transactionRepository.findOngoingTransactionReturnDate(livreId);
+    }
 }

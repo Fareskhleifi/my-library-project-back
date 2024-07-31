@@ -4,10 +4,15 @@ import com.library.booklend.Entity.Transaction;
 import com.library.booklend.Entity.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+@Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     long countByDateRetourIsNull();
@@ -55,5 +60,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "GROUP BY c.id, c.name " +
             "ORDER BY transactionCount DESC")
     List<Map<String, Object>> findCategoryTransactionData();
+
+    @Query(value = "SELECT date_retour FROM transactions WHERE livre_id = :livreId AND  retourne = false", nativeQuery = true)
+    Optional<Date> findOngoingTransactionReturnDate(@Param("livreId") Long livreId);
 
 }
