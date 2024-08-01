@@ -2,7 +2,9 @@ package com.library.booklend.Service;
 
 import com.library.booklend.Entity.Utilisateur;
 import com.library.booklend.Repository.UtilisateurRepository;
+import com.library.booklend.dto.ReqRes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ public class UtilisateurService {
 
     @Autowired
     private UtilisateurRepository utilisateurRepository;
+    @Autowired
+    private JWTUtils jwtUtils;
 @Autowired
     private  PasswordEncoder passwordEncoder;
     public List<Utilisateur> getAllUtilisateurs() {
@@ -64,6 +68,27 @@ public class UtilisateurService {
 
         utilisateur.setPassword(passwordEncoder.encode(newPassword));
         utilisateurRepository.save(utilisateur);
+    }
+
+    public ReqRes getUserDetails(String token) {
+        ReqRes response = new ReqRes();
+        try {
+
+            String email = jwtUtils.extractUsername(token);
+            Utilisateur user = utilisateurRepository.findByEmail(email)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            response.setEmail(user.getEmail());
+            response.setNom(user.getNom());
+            response.setPrenom(user.getPrenom());
+            response.setUsername(user.username());
+            response.setTelephone(user.getTelephone());
+            response.setAdresse(user.getAdresse());
+
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setError(e.getMessage());
+        }
+        return response;
     }
 
 }

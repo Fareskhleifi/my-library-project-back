@@ -64,4 +64,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query(value = "SELECT date_retour FROM transactions WHERE livre_id = :livreId AND  retourne = false", nativeQuery = true)
     Optional<Date> findOngoingTransactionReturnDate(@Param("livreId") Long livreId);
 
+
 }

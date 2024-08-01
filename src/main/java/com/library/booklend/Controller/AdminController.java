@@ -243,7 +243,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAdminDetails(token));
     }
 
-    @PutMapping("/admin/updateUserDetails")
+    @PutMapping("/adminuser/updateUserDetails")
     public ResponseEntity<String> updateUserDetails(@RequestBody Utilisateur updatedUser) {
         try {
             Utilisateur existingUser = utilisateurService.getUtilisateurByEmail(updatedUser.getEmail())
@@ -261,7 +261,7 @@ public class AdminController {
         }
     }
 
-    @PutMapping("/admin/changePassword")
+    @PutMapping("/adminuser/changePassword")
     public ResponseEntity<String> changePassword(@RequestBody PasswordChangeRequest request) {
         try {
             utilisateurService.changePassword(request.getCurrentPassword(), request.getNewPassword(), request.getEmail());

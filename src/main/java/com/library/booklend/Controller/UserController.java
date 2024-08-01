@@ -7,9 +7,13 @@ import com.library.booklend.Repository.UtilisateurRepository;
 import com.library.booklend.Service.JWTUtils;
 import com.library.booklend.Service.LivreService;
 import com.library.booklend.Service.TransactionService;
+import com.library.booklend.Service.UtilisateurService;
 import com.library.booklend.dto.EmpruntRequest;
+import com.library.booklend.dto.PasswordChangeRequest;
+import com.library.booklend.dto.ReqRes;
 import com.library.booklend.dto.TransactionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,6 +37,9 @@ public class UserController {
     private JWTUtils jwtUtils;
     @Autowired
     private TransactionService transactionService;
+
+    @Autowired
+    private UtilisateurService utilisateurService;
     @GetMapping("/user/alone")
     public ResponseEntity<Object> userAlone(){
         return ResponseEntity.ok("Users alone can access this ApI only");
@@ -85,10 +92,15 @@ public class UserController {
         }
 
     }
-    @GetMapping("/user/historique/{utilisateurId}")
-    public ResponseEntity<List<TransactionDTO>> getHistoriqueEmprunts(@PathVariable Long utilisateurId) {
+    @GetMapping("/user/historique")
+    public ResponseEntity<List<TransactionDTO>> getHistoriqueEmprunts(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            List<TransactionDTO> historique = transactionService.getHistoriqueEmprunts(utilisateurId);
+            String token = authorizationHeader.substring(7);
+
+            String email = jwtUtils.extractUsername(token);
+            Utilisateur user = utilisateurRepository.findByEmail(email)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            List<TransactionDTO> historique = transactionService.getHistoriqueEmprunts(user.getId());
             return ResponseEntity.ok(historique);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
@@ -104,4 +116,10 @@ public class UserController {
             return ResponseEntity.noContent().build(); // Pas de transaction en cours ou dateRetour non définie
         }
     }
+
+    @GetMapping("/user/getUserDetails")
+    public ResponseEntity<ReqRes> getAdminDetails(@RequestParam String token) {
+        return ResponseEntity.ok(utilisateurService.getUserDetails(token));
+    }
+
 }

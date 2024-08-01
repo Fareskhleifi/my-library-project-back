@@ -123,4 +123,6 @@ public class TransactionService {
     public Optional<Date> getOngoingTransactionReturnDate(Long livreId) {
         return transactionRepository.findOngoingTransactionReturnDate(livreId);
     }
+
+
 }

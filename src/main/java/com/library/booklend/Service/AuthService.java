@@ -25,9 +25,6 @@ public class AuthService {
     @Autowired
     private UtilisateurRepository userRepository;
 
-
-
-
     @Autowired
     public AuthService(UtilisateurRepository utilisateurRepository, JWTUtils jwtUtils, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.utilisateurRepository = utilisateurRepository;
